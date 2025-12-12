@@ -18,7 +18,7 @@ import CopyIcon from '@/components/icons/copy-icon';
 import { GenerateRoastText } from '@/libraries/generateRoastText';
 import { setSessionData, getSessionData } from '@/libraries/sessionStorage';
 // Actions
-import { GenerateText } from '@/libraries/actions/gemini-generator';
+import { generateText } from '@/libraries/actions/gemini-client';
 import { GetAccountInfo } from '@/libraries/actions/fetch.action';
 
 /* TYPES */
@@ -46,7 +46,7 @@ export default function RootPage() {
   });
 
   // Component Function
-  const callLlm = async (passing: GenshinPlayerData) => {
+  const callLlm = async (passing: GenshinPlayerData): Promise<string> => {
     const { player } = passing;
     const username = player.username;
     const prfilePicture = player.profilePicture.name;
@@ -54,14 +54,15 @@ export default function RootPage() {
     const customeCount = player.showcase.filter(
       ({ costumeId }) => costumeId,
     ).length;
+
     try {
       const prompt = `
         Roasting pemain genshin impact ini menggunakan bahasa gaul, username pemain yaitu ${username}, gambar profil pemain menggunakan ${prfilePicture}, untuk level pemain yaitu ${player?.levels?.rank}. Informasi tambahan yaitu pemain sudah di abyss lantai ${player?.abyss?.floor || 'belum ada'} dan chamber ${player?.abyss?.chamber || 'belum ada'}, jumlah karakter yang dipamerkan berjumlah ${characterCount} dan jumlah kostum karakter berjumlah ${customeCount}  (jawaban format ke style string, boleh kasih emote dan gunakan bahasa indonesia)
       `;
-      const data = await GenerateText(prompt);
+      const data = await generateText(prompt);
       return data.data as string;
     } catch (error) {
-      console.error(error);
+      console.error('LLM Error:', error);
       return '';
     }
   };
