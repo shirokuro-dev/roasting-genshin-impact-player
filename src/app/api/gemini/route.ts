@@ -52,20 +52,22 @@ export async function POST(request: NextRequest) {
     });
 
     const data = await response.json();
-    return {
+
+    return NextResponse.json({
       status: 'success',
       code: 200,
       message: 'Success generate text',
       data: data.candidates[0].content.parts[0].text,
-    };
+    });
   } catch (error: unknown) {
     const errorRes = error as Error;
     console.error(errorRes.message);
-    return {
+
+    return NextResponse.json({
       status: 'error',
       code: 500,
       message: 'Internal server error',
       data: null,
-    };
+    }, { status: 500 });
   }
 }
