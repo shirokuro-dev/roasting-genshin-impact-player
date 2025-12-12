@@ -3,18 +3,15 @@
 export const GenerateText = async (prompt: string) => {
   try {
     const apiKey = process.env.NEXT_API_KEY;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`;
+
     const body = JSON.stringify({
-      contents: [
-        {
-          parts: [
-            {
-              text: prompt,
-            },
-          ],
-        },
-      ],
+      prompt: {
+        text: prompt
+      },
+      max_output_tokens: 300, // bisa diubah sesuai kebutuhan
     });
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -22,12 +19,14 @@ export const GenerateText = async (prompt: string) => {
       },
       body,
     });
+
     const data = await response.json();
+
     return {
       status: 'success',
       code: 200,
       message: 'Success generate text',
-      data: data.candidates[0].content.parts[0].text,
+      data: data.output_text || data.candidates?.[0]?.content?.[0]?.text || '',
     };
   } catch (error: unknown) {
     const errorRes = error as Error;
@@ -40,3 +39,4 @@ export const GenerateText = async (prompt: string) => {
     };
   }
 };
+
