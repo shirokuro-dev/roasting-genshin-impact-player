@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       status: 'success',
       code: 200,
       message: 'Success generate text',
-      data: data.candidates[0].content.parts[0].text,
+      data: data.candidates?.[0]?.content?.parts?.[0]?.text || '',
     });
   } catch (error: unknown) {
     const errorRes = error as Error;
